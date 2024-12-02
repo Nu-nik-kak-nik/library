@@ -64,15 +64,18 @@ class Library:
         else:
             print(f"Книга с ID '{book_id}' не найдена.")
 
+    @staticmethod
+    def _matches_search_term(book: Dict[str, Any], search_term: str) -> bool:
+        """Проверяет, содержит ли книга поисковый запрос в заголовке, авторе или годе."""
+        return (search_term.lower() in book["title"].lower() or
+                search_term.lower() in book["author"].lower() or
+                search_term in str(book["year"]))
+
     def search_book(self) -> None:
         """Ищет книги по названию, автору или году."""
         search_term = input("Введите поисковый запрос (название, автор или год): ")
-        results: List[Dict[str, Any]] = []
-        for book in self.data.values():
-            if (search_term.lower() in book["title"].lower() or
-                    search_term.lower() in book["author"].lower() or
-                    search_term in str(book["year"])):
-                results.append(book)
+        results: List[Dict[str, Any]] = [book for book in self.data.values() if
+                                         self._matches_search_term(book, search_term)]
         if results:
             print("Найденные книги:")
             for book in results:
